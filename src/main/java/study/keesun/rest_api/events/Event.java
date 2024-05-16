@@ -1,26 +1,37 @@
 package study.keesun.rest_api.events;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 
-@Builder @NoArgsConstructor @AllArgsConstructor
-@Getter @Setter @EqualsAndHashCode(of = "id")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
+@Builder
 public class Event {
 
-        private Integer id;
-        private String name;
-        private String description;
-        private LocalDateTime beginEnrollmentDateTime;
-        private LocalDateTime closeEnrollmentDateTime;
-        private LocalDateTime beginEventDateTime;
-        private LocalDateTime endEventDateTime;
-        private String location; // (optional) 이게 없으면 온라인 모임
-        private int basePrice; // (optional)
-        private int maxPrice; // (optional)
-        private int limitOfEnrollment;
-        private boolean offline;
-        private boolean free;
-        private EventStatus eventStatus;
+    @Id
+    @GeneratedValue
+    private Integer id;
+    private String name;
+    private String description;
+    private LocalDateTime beginEnrollmentDateTime;
+    private LocalDateTime closeEnrollmentDateTime;
+    private LocalDateTime beginEventDateTime;
+    private LocalDateTime endEventDateTime;
+    private String location; // (optional) 이게 없으면 온라인 모임
+    private int basePrice; // (optional)
+    private int maxPrice; // (optional)
+    private int limitOfEnrollment;
+    private boolean offline;
+    private boolean free;
+    @Enumerated(EnumType.STRING)
+    private EventStatus eventStatus;
 
 }

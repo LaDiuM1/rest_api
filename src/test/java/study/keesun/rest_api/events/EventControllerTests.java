@@ -5,10 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 
@@ -18,11 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@WebMvcTest(EventController.class)
 public class EventControllerTests {
 
     @Autowired
     MockMvc mockMvc;
+
+    @MockBean
+    EventRepository eventRepository;
 
     @Autowired
     ObjectMapper mapper;
@@ -30,6 +35,7 @@ public class EventControllerTests {
     @Test
     public void createEvent() throws Exception {
         Event event = Event.builder()
+                .id(1)
                 .name("Spring")
                 .description("REST APIT development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2024,4,23,22,31,25))
@@ -43,6 +49,8 @@ public class EventControllerTests {
                 .build();
 
         String jsonData = mapper.writeValueAsString(event);
+
+        when(eventRepository.save(any())).thenReturn(event);
 
         mockMvc.perform(post("/api/events/")
                         .contentType(MediaType.APPLICATION_JSON)
