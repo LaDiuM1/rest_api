@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,8 +17,7 @@ import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(EventController.class)
@@ -35,7 +35,6 @@ public class EventControllerTests {
     @Test
     public void createEvent() throws Exception {
         Event event = Event.builder()
-                .id(1)
                 .name("Spring")
                 .description("REST APIT development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2024,4,23,22,31,25))
@@ -48,9 +47,10 @@ public class EventControllerTests {
                 .location("강남역")
                 .build();
 
+        event.setId(1);
         String jsonData = mapper.writeValueAsString(event);
 
-        when(eventRepository.save(any())).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event);
 
         mockMvc.perform(post("/api/events/")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +58,9 @@ public class EventControllerTests {
                         .content(jsonData))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").exists());
+                .andExpect(jsonPath("id").exists())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE));
     }
 
 
