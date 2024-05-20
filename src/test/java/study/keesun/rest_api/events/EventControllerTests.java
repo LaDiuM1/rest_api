@@ -3,6 +3,7 @@ package study.keesun.rest_api.events;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import study.keesun.rest_api.common.TestDescription;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +34,7 @@ public class EventControllerTests {
     ObjectMapper mapper;
 
     @Test
+    @TestDescription("정상 이벤트 생성 테스트")
     public void createEvent() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
@@ -62,6 +65,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("dto 필드에 없는 값 입력 시 bad request 검증")
     public void createEvent_Bad_Request() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
@@ -90,6 +94,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("이벤트 생성 -> 입력값 null 유효성 검사")
     public void createEvent_Bad_Request_Empty_Input() throws Exception{
         EventDto eventDto = EventDto.builder().build();
 
@@ -102,6 +107,7 @@ public class EventControllerTests {
 
     }
     @Test
+    @TestDescription("이벤트 생성 -> 잘못된 값 유효성 검사")
     public void createEvent_Bad_Request_Wrong_Input() throws Exception{
         EventDto eventDto = EventDto
                 .builder()
