@@ -34,6 +34,7 @@ public class EventController {
         }
         eventValidator.validate(eventDto, errors);
         Event event = modelMapper.map(eventDto, Event.class);
+        event.update();
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
         }
