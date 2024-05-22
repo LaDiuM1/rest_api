@@ -3,7 +3,6 @@ package study.keesun.rest_api.events;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +96,7 @@ public class EventControllerTests {
     @TestDescription("이벤트 생성 -> 입력값 null 유효성 검사")
     public void createEvent_Bad_Request_Empty_Input() throws Exception{
         EventDto eventDto = EventDto.builder().build();
+
 
         String jsonData = mapper.writeValueAsString(eventDto);
 

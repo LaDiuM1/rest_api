@@ -40,9 +40,9 @@ public class Event {
         }
         // update offline
         if(this.location == null || this.location.isBlank()){
-            this.offline = true;
-        }else{
             this.offline = false;
+        }else{
+            this.offline = true;
         }
     }
 }
