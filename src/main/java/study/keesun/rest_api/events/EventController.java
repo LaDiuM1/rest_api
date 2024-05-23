@@ -2,6 +2,7 @@ package study.keesun.rest_api.events;
 
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Controller
 @RequestMapping(value = "/api/events/", produces = MediaTypes.HAL_JSON_VALUE)
@@ -40,8 +42,13 @@ public class EventController {
         }
 
         Event newEvent = this.eventRepository.save(event);
+        EntityModel<Event> eventModel = EntityModel.of(newEvent);
+        eventModel.add(linkTo(EventController.class).slash(newEvent.getId()).withRel("self"));
+        eventModel.add(linkTo(EventController.class).withRel("query-events"));
+        eventModel.add(linkTo(EventController.class).withRel("update-events"));
         URI createUrl = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createUrl).body(event);
+
+        return ResponseEntity.created(createUrl).body(eventModel);
     }
 
 }
