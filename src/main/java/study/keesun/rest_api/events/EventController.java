@@ -1,15 +1,15 @@
 package study.keesun.rest_api.events;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -29,6 +29,13 @@ public class EventController {
         this.eventValidator = eventValidator;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getEvent(@PathVariable Integer id){
+        Event event = eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        return ResponseEntity.ok(event);
+    }
+
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto, Errors errors){
         if(errors.hasErrors()){
@@ -40,15 +47,16 @@ public class EventController {
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
         }
-
         Event newEvent = this.eventRepository.save(event);
-        EntityModel<Event> eventModel = EntityModel.of(newEvent);
-        eventModel.add(linkTo(EventController.class).slash(newEvent.getId()).withRel("self"));
-        eventModel.add(linkTo(EventController.class).withRel("query-events"));
-        eventModel.add(linkTo(EventController.class).withRel("update-events"));
-        URI createUrl = linkTo(EventController.class).slash(newEvent.getId()).toUri();
 
-        return ResponseEntity.created(createUrl).body(eventModel);
+        WebMvcLinkBuilder createdLink = linkTo(methodOn(EventController.class).getEvent(event.getId()));
+
+        EntityModel<Event> eventModel = EntityModel.of(newEvent);
+        eventModel.add(createdLink.withSelfRel());
+        eventModel.add(linkTo(methodOn(EventController.class).getEvent(event.getId())).withRel("query-events"));
+        eventModel.add(linkTo(methodOn(EventController.class).getEvent(event.getId())).withRel("update-events"));
+
+        return ResponseEntity.created(createdLink.toUri()).body(eventModel);
     }
 
 }
