@@ -1,0 +1,6 @@
+
+# docker run --name rest -p 5432:5432 -e POSTGRES_PASSWORD=PASS -d postgres
+# 포스트그레 실행
+
+# psql -d postgres -U postgres
+# 도커에서 포스트그레 접속
